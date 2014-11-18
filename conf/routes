@@ -2,11 +2,14 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Home page
-#GET        /                       controllers.Application.index
-GET        /channel/:channel        controllers.Application.channel(channel: String)
-GET        /socket/:channel         controllers.Application.socket(channel: String)
-POST       /push/:channel           controllers.Application.push(channel: String)
+# CORS
+OPTIONS        /*path                   controllers.Actions.options(path)
 
-# Map static resources from the /public folder to the /assets URL path
-GET        /assets/*file            controllers.Assets.at(path="/public", file)
+# socket paths
+GET            /channel/:channel        controllers.Application.channel(channel: String)
+GET            /socket/:channel         controllers.Application.socket(channel: String)
+POST           /push/:channel           controllers.Application.push(channel: String)
+POST           /auth                    controllers.Application.auth
+
+GET     /assets/*file               controllers.Assets.at(path="/public", file)
+

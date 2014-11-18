@@ -1,7 +1,7 @@
 package actors
 
 import akka.actor._
-import play.api.Application
+import play.api.{Logger, Application}
 import play.api.libs.concurrent.Akka
 import play.api.libs.json.JsValue
 
@@ -36,10 +36,9 @@ object ChannelActor {
         // The actor to handle the WebSocket
         val requestActor = context.watch(context.actorOf(createHandler(self), token))
 
-        println("requestActor in supervisor"+requestActor)
 
         def receive = {
-            case msg: JsValue => println("message in request actor received"+msg)
+            case msg: JsValue => Logger.debug(msg.toString)
         }
 
     }
