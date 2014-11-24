@@ -2,64 +2,61 @@ package actor
 
 import akka.actor._
 import play.api.Logger
+import play.api.Play.current
 import play.api.libs.concurrent.Akka
 import play.api.libs.json.JsValue
-import play.api.Play.current
 
+case class Subscribe(token: String, channel: String)
+case class ClientMessage(token: String, json: JsValue)
 
 object WarpActor {
-
-    def props(out: ActorRef, channel: String, token: String) = {
-        Props(new WarpActor(out, channel, token))
-    }
+    def props(token: String)(out: ActorRef) =
+        Props(new WarpActor(out, token))
 }
 
-class WarpActor(out: ActorRef, channel: String, token: String) extends Actor {
+class WarpActor(out: ActorRef, token: String) extends Actor {
 
-    val child = Akka.system.actorOf(RequestActor.props(out, channel, token), token)
-    Logger.debug("created listener: "+child)
+    val child = Akka.system.actorOf(RequestActor.props(out), token)
+    Logger.debug("created request listener: "+child)
 
     def receive = {
+        case subscribe: JsValue if (subscribe \ "subscribe").asOpt[String].isDefined =>
+            val channel: String = (subscribe \ "subscribe").asOpt[String].getOrElse("default")
+            child ! Subscribe(token, channel)
         case msg: JsValue =>
-            Logger.debug("received in WarpActor: "+msg)
+            val channel: String = (msg \ "channel").asOpt[String].getOrElse("default")
             val actor = Akka.system.actorSelection("user/*/"+channel)
             actor ! msg
     }
 
     override def postStop() = {
+        Logger.debug("kill WarpActor: "+self)
         child ! PoisonPill
     }
 }
 
 object RequestActor {
 
-    def props(out: ActorRef, channel: String, token: String) = {
-        Props(new RequestActor(out, channel, token))
-    }
+    def props(out: ActorRef) = Props(new RequestActor(out: ActorRef))
 }
 
-class RequestActor(out: ActorRef, channel: String, token: String) extends Actor {
-
-    val child = context.actorOf(ChannelActor.props(out), channel)
-    Logger.debug("created listener: "+child)
+class RequestActor(out: ActorRef) extends Actor {
 
     def receive = {
-        case msg: JsValue =>
-            Logger.debug("received in RequestActor: "+msg)
-            val actor = Akka.system.actorSelection("user/channels/*/"+channel)
-            out ! msg
+        case subscribe: Subscribe =>
+            val child = context.actorOf(ChannelActor.props(out), subscribe.channel)
+            Logger.debug("created request listener: " + child)
     }
 
-    override def postStop() = {
-        child ! PoisonPill
+    override def postStop = {
+        Logger.debug("kill RequestActor: "+self)
     }
+
 }
 
 object ChannelActor {
 
-    def props(out: ActorRef) = {
-        Props(new ChannelActor(out))
-    }
+    def props(out: ActorRef) = Props(new ChannelActor(out: ActorRef))
 }
 
 class ChannelActor(out: ActorRef) extends Actor {
@@ -67,7 +64,11 @@ class ChannelActor(out: ActorRef) extends Actor {
     def receive = {
         case msg: JsValue =>
             Logger.debug("received in ChannelActor: "+msg)
-            val actor = Akka.system.actorSelection("user/channels/*/")
             out ! msg
     }
+
+    override def postStop = {
+        Logger.debug("kill ChannelActor: "+self)
+    }
+
 }

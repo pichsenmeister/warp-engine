@@ -3,6 +3,7 @@ package controllers
 import actor.{Push, WarpActor}
 import models.AuthToken
 import org.sedis.Dress
+import play.api.Play
 import play.api.Play.current
 import com.typesafe.plugin._
 import play.api.libs.json.JsValue
@@ -11,24 +12,34 @@ import scala.concurrent.Future
 
 object Application extends Controller {
 
-    def channel(channel: String) = CORSAction {
-        Ok(views.html.main(channel)).withCookies(
-            new Cookie("authToken", "token2", None, "/", None, false, true))
+    val authenticate: Boolean =
+        Play.current.configuration.getBoolean("auth.active").getOrElse(false)
+    val cookieName: String =
+        Play.current.configuration.getString("auth.cookie").getOrElse("auth-token")
+    val cookieExpiration: Int =
+        Play.current.configuration.getInt("auth.expiration").getOrElse(60)
+
+    def channel(channel: String) = Action {
+        Ok(views.html.main(channel))
     }
 
-    def socket(channel: String) = WebSocket.tryAcceptWithActor[String, String] { request =>
+    def socket = WebSocket.tryAcceptWithActor[JsValue, JsValue] { request =>
         val pool = use[RedisPlugin].sedisPool
 
-        val authToken = pool.withJedisClient { client =>
-            for {
-                cookie <- request.cookies.get("authToken")
-                token <- Dress.up(client).get(cookie.value)
-            } yield token
+        val authToken: Option[String] = authenticate match {
+            case true =>
+                pool.withJedisClient { client =>
+                    for {
+                        cookie <- request.cookies.get(cookieName)
+                        token <- Dress.up(client).get(cookie.value)
+                    } yield token
+                }
+            case _ => Some("CaptainKirk")
         }
 
         Future.successful(authToken match {
             case None => Left(Forbidden)
-            case Some(_) => Right(WarpActor.props(_, channel, request.id.toString))
+            case Some(_) => Right(WarpActor.props(request.id.toString))
         })
     }
 
@@ -42,7 +53,7 @@ object Application extends Controller {
         val auth: Option[AuthToken] = request.body.asOpt[AuthToken]
         auth match {
             case Some(t) =>
-                val duration: Int = t.duration*60
+                val duration: Int = cookieExpiration*60
                 val now: String = (System.currentTimeMillis()/1000).toString
                 val pool = use[RedisPlugin].sedisPool
                 pool.withJedisClient { client =>

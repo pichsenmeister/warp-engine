@@ -7,9 +7,10 @@ OPTIONS        /*path                   controllers.Actions.options(path)
 
 # socket paths
 GET            /channel/:channel        controllers.Application.channel(channel: String)
-GET            /socket/:channel         controllers.Application.socket(channel: String)
+GET            /socket                  controllers.Application.socket
 POST           /push/:channel           controllers.Application.push(channel: String)
 POST           /auth                    controllers.Application.auth
+#GET             /test                   controllers.Application.test
 
-GET     /assets/*file               controllers.Assets.at(path="/public", file)
+GET            /assets/*file            controllers.Assets.at(path="/public", file)
 
