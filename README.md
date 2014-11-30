@@ -1,7 +1,14 @@
 # warp-engine
 
 
-**W** ieldy **A** utomatic **R** eactive **P** ush - Engine
+**w** ieldy **a** utomatic **r** eactive **p** ush - engine (by [@3x14159265][https://www.twitter.com/3x14159265])
+
+warp-engine is an open-source, realtime push engine, written in scala, build on play and akka. It's fully reactive and easy to setup (~10-15 minutes).
+
+the instructions only covers setup on an ubuntu 14.04 x64 server. i recommend using [digitalocean](https://www.digitalocean.com/?refcode=06560b6c098a) (min. $20 droplet is required), since it's easy to setup and quite cheap. 
+you can do me a favour and use me referrel link ([this link](https://www.digitalocean.com/?refcode=06560b6c098a)), if you haven't signed up for digitalocean yet. you'll get a $10 if you signup via my link:
+
+[https://www.digitalocean.com/?refcode=06560b6c098a](https://www.digitalocean.com/?refcode=06560b6c098a)
 
 ## setup
 
@@ -22,7 +29,7 @@ run init script (involves pressing "y" once at a time, since it's installing dep
 sh ~/warp-engine/init.sh
 ```
 
-start warp-engine (this will take a few minutes. when everything works fine, the server will start. you can leave server logging with ```ctrl+d```)
+start warp-engine (this will take a few minutes. better grab a coffee :coffee:. when everything works fine, the server will start. you can escape server logging with ```ctrl+d```)
 ```
 warp-start
 ```
