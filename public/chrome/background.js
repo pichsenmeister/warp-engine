@@ -16,22 +16,17 @@ function show(msg) {
 
 // Conditionally initialize the options.
 if (!localStorage.isInitialized) {
-  localStorage.isActivated = true;   // The display activation.
-  localStorage.frequency = 1;        // The display frequency, in minutes.
-  localStorage.isInitialized = true; // The option initialization.
+  localStorage.channels = "default,";   
+  localStorage.host = "localhost:9000";   
 }
 
 // Test for notification support.
 if (window.Notification) {
-  
-
-   connect();
-
-  
+   connect(); 
 }
 
 function connect() {
-  var wsUri = "ws://localhost:9000/socket/channel";
+  var wsUri = "ws://"+localStorage.host+"/socket";
 
     websocket = new WebSocket(wsUri);
     
