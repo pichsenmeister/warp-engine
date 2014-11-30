@@ -17,6 +17,6 @@ echo "alias warp-deploy='sh ~/warp-engine/shells/deploy.sh'" >> ~/.bashrc
 echo "alias warp-start='sh ~/warp-engine/shells/start.sh'" >> ~/.bashrc
 echo "alias warp-stop='sh ~/warp-engine/shells/stop.sh'" >> ~/.bashrc
 echo "alias warp-restart='sh ~/warp-engine/shells/stop.sh && ~/warp-engine/shells/start.sh'" >> ~/.bashrc
-echo "adding crontab for monitoring..."
-(crontab -l 2>/dev/null; echo "*/1 * * * * ~/warp-engine/shells/monitor.sh >> ~/warp.log ") | crontab -
+echo "alias warp-monitor='sh ~/warp-engine/shells/install-monitor.sh'" >> ~/.bashrc
+bash
 exit 0

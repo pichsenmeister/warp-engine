@@ -9,5 +9,6 @@ kill -15 $PID
 pkill java
 echo "starting server..."
 sh ~/warp-engine/shells/start.sh
+exit 0
 
 

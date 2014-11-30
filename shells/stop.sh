@@ -9,6 +9,7 @@ then
     pkill java
     rm ~/warp-engine/RUNNING_PID
 fi
+exit 0
 
 
 
