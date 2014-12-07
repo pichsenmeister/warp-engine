@@ -1,7 +1,7 @@
 # warp-engine
 
 
-**w** ieldy **a** utomatic **r** eactive **p** ush - engine (by [@3x14159265](https://www.twitter.com/3x14159265))
+**w** ery **a** wesome **r** eactive **p** ush - engine (by [@3x14159265](https://www.twitter.com/3x14159265))
 
 warp-engine is an open-source, realtime push engine, written in [scala](http://scala-lang.org/), build on [play](https://playframework.com/) and [akka](http://akka.io/). It's fully reactive and easy to setup (~10-15 minutes).
 
@@ -46,3 +46,8 @@ warp-monitor
 * ```warp-start``` starts the warp-engine
 * ```warp-restart``` restarts the warp-engine
 * ```warp-deploy``` fetches master from github and starts warp-engine
+
+
+## license
+
+Sourcecode licensed under [GPL v3.0](http://www.gnu.org/copyleft/gpl.html), documentation under [CC BY 3.0](http://creativecommons.org/licenses/by/3.0/).
