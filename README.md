@@ -1,9 +1,12 @@
 # warp-engine
 
+(by [@3x14159265](https://www.twitter.com/3x14159265))
 
-**w** ieldy **a** utomatic **r** eactive **p** ush - engine (by [@3x14159265][https://www.twitter.com/3x14159265])
+**check out [warp-engine.org](http://www.warp-engine.org) for further informations!**
+
 
 warp-engine is an open-source, realtime push engine, written in [scala](http://scala-lang.org/), build on [play](https://playframework.com/) and [akka](http://akka.io/). It's fully reactive and easy to setup (~10-15 minutes).
+
 
 the instructions only covers setup on an ubuntu 14.04 x64 server. i recommend using [digitalocean](https://www.digitalocean.com/?refcode=06560b6c098a) (min. $20 droplet is required), since it's easy to setup and quite cheap. 
 you can do me a favour and use me referrel link ([this link](https://www.digitalocean.com/?refcode=06560b6c098a)), if you haven't signed up for digitalocean yet. you'll get a $10 if you signup via my link:
@@ -46,3 +49,8 @@ warp-monitor
 * ```warp-start``` starts the warp-engine
 * ```warp-restart``` restarts the warp-engine
 * ```warp-deploy``` fetches master from github and starts warp-engine
+
+
+## license
+
+Source code licensed under [GPL v3.0](http://www.gnu.org/copyleft/gpl.html), documentation under [CC BY 3.0](http://creativecommons.org/licenses/by/3.0/).
