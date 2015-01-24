@@ -1,13 +1,14 @@
 package controllers
 
 import actor.{Push, WarpActor}
+import com.typesafe.plugin._
 import models.AuthToken
 import org.sedis.Dress
 import play.api.Play
 import play.api.Play.current
-import com.typesafe.plugin._
 import play.api.libs.json.JsValue
 import play.api.mvc._
+
 import scala.concurrent.Future
 
 object Application extends Controller {

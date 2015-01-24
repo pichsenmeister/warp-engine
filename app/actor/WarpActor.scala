@@ -22,10 +22,12 @@ class WarpActor(out: ActorRef, token: String) extends Actor {
     def receive = {
         case subscribe: JsValue if (subscribe \ "subscribe").asOpt[String].isDefined =>
             val channel: String = (subscribe \ "subscribe").asOpt[String].getOrElse("default")
+            Logger.debug("subscribe: "+channel)
             child ! Subscribe(token, channel)
         case msg: JsValue =>
             val channel: String = (msg \ "channel").asOpt[String].getOrElse("default")
             val actor = Akka.system.actorSelection("user/*/"+channel)
+            Logger.debug("message: "+channel)
             actor ! msg
     }
 
@@ -45,7 +47,7 @@ class RequestActor(out: ActorRef) extends Actor {
     def receive = {
         case subscribe: Subscribe =>
             val child = context.actorOf(ChannelActor.props(out), subscribe.channel)
-            Logger.debug("created request listener: " + child)
+            Logger.debug("created channel listener: " + child)
     }
 
     override def postStop = {
