@@ -1,10 +1,10 @@
 #!/bin/sh
 cd ~/
 echo "downloading resources..."
-apt-get install unzip
-apt-get install openjdk-7-jdk
-apt-get install redis-server
-apt-get install wget
+apt-get -y install unzip
+apt-get -y install openjdk-7-jdk
+apt-get -y install redis-server
+apt-get -y install wget
 echo "downloading typesafe activator..."
 wget http://downloads.typesafe.com/typesafe-activator/1.2.10/typesafe-activator-1.2.10-minimal.zip
 echo "unzip typesafe activator..."
