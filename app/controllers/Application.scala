@@ -20,10 +20,6 @@ object Application extends Controller {
     val cookieExpiration: Int =
         Play.current.configuration.getInt("auth.expiration").getOrElse(60)
 
-    def channel(channel: String) = Action {
-        Ok(views.html.main(channel))
-    }
-
     def socket = WebSocket.tryAcceptWithActor[JsValue, JsValue] { request =>
         val pool = use[RedisPlugin].sedisPool
 
@@ -46,7 +42,7 @@ object Application extends Controller {
 
     def push(channel: String) = Action(parse.json) { implicit request =>
         val json: JsValue = request.body
-       Push.send(channel, json)
+        Push.send(channel, json)
         Accepted
     }
 
