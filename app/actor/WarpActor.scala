@@ -5,6 +5,7 @@ import play.api.Logger
 import play.api.Play.current
 import play.api.libs.concurrent.Akka
 import play.api.libs.json.JsValue
+import akka.actor.SupervisorStrategy.Stop
 
 case class Subscribe(token: String, channel: String)
 case class ClientMessage(token: String, json: JsValue)
@@ -16,7 +17,11 @@ object WarpActor {
 
 class WarpActor(out: ActorRef, token: String) extends Actor {
 
-    val child = Akka.system.actorOf(RequestActor.props(out), token)
+    import context.dispatcher
+
+    val child = context.watch(Akka.system.actorOf(RequestActor.props(out), token))
+
+//    val child = Akka.system.actorOf(RequestActor.props(out), token)
     Logger.debug("created request listener: "+child)
 
     def receive = {
@@ -27,8 +32,15 @@ class WarpActor(out: ActorRef, token: String) extends Actor {
         case msg: JsValue =>
             val channel: String = (msg \ "channel").asOpt[String].getOrElse("default")
             val actor = Akka.system.actorSelection("user/*/"+channel)
-            Logger.debug("message: "+channel)
+//            Logger.debug("message: "+channel)
             actor ! msg
+    }
+
+    // Stop the child if it gets an exception
+    override val supervisorStrategy = OneForOneStrategy() {
+        case _ =>
+            Logger.debug("supervisor strategy: "+self)
+            Stop
     }
 
     override def postStop() = {
@@ -65,7 +77,7 @@ class ChannelActor(out: ActorRef) extends Actor {
 
     def receive = {
         case msg: JsValue =>
-            Logger.debug("received in ChannelActor: "+msg)
+//            Logger.debug("received in ChannelActor: "+msg)
             out ! msg
     }
 
