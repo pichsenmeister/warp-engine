@@ -8,10 +8,10 @@ apt-get -y install wget
 echo "downloading typesafe activator..."
 wget http://downloads.typesafe.com/typesafe-activator/1.3.2/typesafe-activator-1.3.2-minimal.zip
 echo "unzip typesafe activator..."
-unzip typesafe-activator-1.3.8-minimal.zip
-rm typesafe-activator-1.3.8-minimal.zip
+unzip typesafe-activator-1.3.2-minimal.zip
+rm typesafe-activator-1.3.2-minimal.zip
 echo "settings PATH variables..."
-echo "export PATH=$PATH:~/activator-1.3.8-minimal/activator" >> ~/.bashrc
+echo "export PATH=$PATH:~/activator-1.3.2-minimal/activator" >> ~/.bashrc
 echo "settings aliases..."
 echo "alias warp-deploy='sh ~/warp-engine/shells/deploy.sh'" >> ~/.bashrc
 echo "alias warp-start='sh ~/warp-engine/shells/start.sh'" >> ~/.bashrc
