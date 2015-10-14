@@ -3,6 +3,7 @@ package actor
 import akka.actor.ActorSelection
 import akka.pattern.ask
 import akka.util.Timeout
+import messages.ClientMessage
 import org.joda.time.DateTime
 import play.api.libs.concurrent.Akka
 import play.api.libs.json.{JsValue, Json}
@@ -15,12 +16,14 @@ object Push {
     implicit val timeout = Timeout(5 seconds)
 
     def send(channel: String, json: JsValue): Unit = {
-        val value: JsValue = Json.obj("channel" -> channel, "msg" -> json, "timestamp" -> DateTime.now().getMillis())
+        val value: ClientMessage = ClientMessage("push", channel, json, DateTime.now().getMillis())
         val actor: ActorSelection = Akka.system.actorSelection("user/*/"+channel)
         (actor ? value).mapTo[JsValue] recover {
             case e: Throwable =>
                 Json.obj("error" -> "no user connected")
         }
+        val hook: ActorSelection = Akka.system.actorSelection("user/hook")
+        hook ! (channel, value)
     }
 
 }

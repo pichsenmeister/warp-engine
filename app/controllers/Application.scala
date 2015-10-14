@@ -2,6 +2,7 @@ package controllers
 
 import actor.{Push, WarpActor}
 import com.typesafe.plugin._
+import helpers.Hash
 import models.{WebHook, AuthToken}
 import org.sedis.Dress
 import play.api.Play
@@ -37,7 +38,7 @@ object Application extends Controller {
 
         Future.successful(authToken match {
             case None => Left(Forbidden)
-            case Some(_) => Right(WarpActor.props(request.id.toString))
+            case Some(_) => Right(WarpActor.props(Hash.md5("Scotty-"+request.id.toString)))
         })
     }
 

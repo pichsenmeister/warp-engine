@@ -1,7 +1,8 @@
 package actor
 
 import akka.actor._
-import messages.Subscribe
+import messages.{ClientMessage, Subscribe}
+import org.joda.time.DateTime
 import play.api.Logger
 import play.api.Play.current
 import play.api.libs.concurrent.Akka
@@ -16,44 +17,48 @@ object WarpActor {
 class WarpActor(out: ActorRef, token: String) extends Actor {
 
     val child = context.watch(Akka.system.actorOf(RequestActor.props(out), token))
-    val hook: ActorRef = context.actorOf(HookActor.props)
-
-//    val child = Akka.system.actorOf(RequestActor.props(out), token)
     Logger.debug("created request listener: "+child)
 
     def receive = {
         case subscribe: JsValue if (subscribe \ "subscribe").asOpt[String].isDefined =>
             val channel: String = (subscribe \ "subscribe").asOpt[String].getOrElse("default")
-            val sub: Subscribe = Subscribe(token, channel, (subscribe \ "data").asOpt[JsValue])
+            val sub: Subscribe = Subscribe(token, channel, DateTime.now().getMillis(), (subscribe \ "data").asOpt[JsValue])
             child ! sub
 
-            val actor = Akka.system.actorSelection("user/*/"+channel)
-            actor ! sub
+            notify(channel, sub)
+            hook(channel, sub)
 
-            sendToHook(channel, Json.obj("sub" -> Json.toJson(sub)))
         case msg: JsValue =>
             val channel: String = (msg \ "channel").asOpt[String].getOrElse("default")
+            val message: ClientMessage = ClientMessage(token, channel, msg, DateTime.now().getMillis())
 
-            val actor = Akka.system.actorSelection("user/*/"+channel)
-            actor ! msg
+            notify(channel, message)
+            hook(channel, message)
 
-            sendToHook(channel, msg)
     }
 
     // Stop the child if it gets an exception
-    override val supervisorStrategy = OneForOneStrategy() {
-        case _ =>
-            Logger.debug("supervisor strategy: "+self)
-            Stop
-    }
+//    override val supervisorStrategy = OneForOneStrategy() {
+//        case _ =>
+//            Logger.debug("supervisor strategy: "+self)
+//            Stop
+//    }
 
     override def postStop() = {
         Logger.debug("kill WarpActor: "+self)
         child ! PoisonPill
-        hook ! PoisonPill
     }
 
-    private def sendToHook(channel: String, msg: JsValue): Unit = {
+    private def notify(channel: String, msg: Any): Unit = {
+        Logger.debug("notify actors")
+        val actor = Akka.system.actorSelection("user/*/"+channel)
+        actor ! msg
+    }
+
+    private def hook(channel: String, msg: Any): Unit = {
+        Logger.debug("notify hook")
+        val hook = Akka.system.actorSelection("user/hook")
         hook ! (channel, msg)
     }
+
 }

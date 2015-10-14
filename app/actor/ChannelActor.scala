@@ -1,7 +1,8 @@
 package actor
 
 import akka.actor.{Props, Actor, ActorRef}
-import messages.{Subscribe, Unsubscribe}
+import messages.{ClientMessage, Subscribe, Unsubscribe}
+import org.joda.time.DateTime
 import play.api.Logger
 import play.api.libs.concurrent.Akka
 import play.api.libs.json.{Json, JsValue}
@@ -15,7 +16,6 @@ class ChannelActor(out: ActorRef) extends Actor {
 
     // optional data at subscription
     var data: Option[JsValue] = None
-    val hook: ActorRef = context.actorOf(HookActor.props)
 
     def receive = {
         case subscribe: Subscribe =>
@@ -25,20 +25,21 @@ class ChannelActor(out: ActorRef) extends Actor {
         case unsubscribe: Unsubscribe =>
             Logger.debug("unsubscribed in ChannelActor: "+Json.toJson(unsubscribe).toString())
             out ! Json.obj("unsub" -> Json.toJson(unsubscribe))
-        case msg: JsValue =>
-            Logger.debug("received in ChannelActor: "+msg)
-            out ! msg
+        case msg: ClientMessage =>
+            Logger.debug("received in ChannelActor: "+Json.toJson(msg))
+            out ! Json.toJson(msg.copy(data = data))
     }
 
     override def postStop = {
         Logger.debug("kill ChannelActor: "+self)
         val token: String = self.path.parent.name
-        val unsub: Unsubscribe = Unsubscribe(token, self.path.name, data)
+        val unsub: Unsubscribe = Unsubscribe(token, self.path.name, DateTime.now().getMillis(), data)
 
         val actor = Akka.system.actorSelection("user/*/"+self.path.name)
         actor ! unsub
 
-        hook ! (self.path.name, Json.obj("unsub" -> Json.toJson(unsub)))
+        val hook = Akka.system.actorSelection("user/hook")
+        hook ! (self.path.name, unsub)
     }
 
 }

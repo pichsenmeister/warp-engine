@@ -4,7 +4,7 @@ import akka.actor._
 import akka.pattern.ask
 import akka.util.Timeout
 import com.typesafe.plugin._
-import messages.{Unsubscribe, Subscribe}
+import messages.{ClientMessage, Unsubscribe, Subscribe}
 import org.joda.time.DateTime
 import org.sedis.Dress
 import play.api.Logger
@@ -22,9 +22,15 @@ object HookActor {
 class HookActor() extends Actor {
 
     def receive = {
-       case (channel: String, msg: JsValue) =>
-            Logger.debug("received in HookActor ("+channel+"): "+msg)
-            sendToHook(channel, msg)
+        case (channel: String, sub: Subscribe) =>
+            Logger.debug("received in HookActor ("+channel+"): "+Json.toJson(sub))
+            sendToHook(channel, Json.obj("sub" -> Json.toJson(sub)))
+        case (channel: String, unsub: Unsubscribe) =>
+            Logger.debug("received in HookActor ("+channel+"): "+Json.toJson(unsub))
+            sendToHook(channel, Json.obj("unsub" -> Json.toJson(unsub)))
+        case (channel: String, msg: ClientMessage) =>
+            Logger.debug("received in HookActor ("+channel+"): "+Json.toJson(msg))
+            sendToHook(channel, Json.toJson(msg))
     }
 
     private def sendToHook(channel: String, msg: JsValue): Unit = {
