@@ -27,7 +27,7 @@ clone git repository via https
 git clone https://github.com/3x14159265/warp-engine.git
 ```
 
-run init script (involves pressing "y" once at a time, since it's installing dependencies via apt-get)
+run init script 
 ```
 sh ~/warp-engine/init.sh
 ```
