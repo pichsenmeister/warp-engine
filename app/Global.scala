@@ -8,6 +8,5 @@ object Global extends GlobalSettings {
 
     override def onStart(app: play.api.Application) {
         lazy val hook: ActorRef = Akka.system(app).actorOf(Props[HookActor], "hook")
-        println(hook)
     }
 }

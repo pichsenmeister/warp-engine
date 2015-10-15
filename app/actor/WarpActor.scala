@@ -17,6 +17,7 @@ object WarpActor {
 class WarpActor(out: ActorRef, token: String) extends Actor {
 
     val child = context.watch(Akka.system.actorOf(RequestActor.props(out), token))
+    Logger.debug("created warp actor: "+self)
     Logger.debug("created request listener: "+child)
 
     def receive = {
@@ -30,7 +31,7 @@ class WarpActor(out: ActorRef, token: String) extends Actor {
 
         case msg: JsValue =>
             val channel: String = (msg \ "channel").asOpt[String].getOrElse("default")
-            val message: ClientMessage = ClientMessage(token, channel, msg, DateTime.now().getMillis())
+            val message: ClientMessage = ClientMessage(token, channel, (msg \ "msg"), DateTime.now().getMillis())
 
             notify(channel, message)
             hook(channel, message)
