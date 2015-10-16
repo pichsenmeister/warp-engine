@@ -5,7 +5,7 @@ import com.typesafe.plugin._
 import helpers.Hash
 import models.{WebHook, AuthToken}
 import org.sedis.Dress
-import play.api.Play
+import play.api.{Logger, Play}
 import play.api.Play.current
 import play.api.libs.json.JsValue
 import play.api.mvc._
@@ -52,6 +52,7 @@ object Application extends Controller {
         val hook: Option[WebHook] = request.body.asOpt[WebHook]
         hook match {
             case Some(h) =>
+                Logger.debug("set hook "+h.hook)
                 val duration: Int = h.duration.getOrElse(hookExpiration)*60
                 val now: String = (System.currentTimeMillis()/1000).toString
                 val pool = use[RedisPlugin].sedisPool

@@ -26,6 +26,7 @@ class WarpActor(out: ActorRef, token: String) extends Actor {
             val sub: Subscribe = Subscribe(token, channel, DateTime.now().getMillis(), (subscribe \ "data").asOpt[JsValue])
             child ! sub
 
+            println("here in subscribe receive")
             notify(channel, sub)
             hook(channel, sub)
 
