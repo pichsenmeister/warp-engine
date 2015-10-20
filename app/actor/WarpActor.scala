@@ -26,7 +26,6 @@ class WarpActor(out: ActorRef, token: String) extends Actor {
             val sub: Subscribe = Subscribe(token, channel, DateTime.now().getMillis(), (subscribe \ "data").asOpt[JsValue])
             child ! sub
 
-            println("here in subscribe receive")
             notify(channel, sub)
             hook(channel, sub)
 
@@ -52,13 +51,11 @@ class WarpActor(out: ActorRef, token: String) extends Actor {
     }
 
     private def notify(channel: String, msg: Any): Unit = {
-        Logger.debug("notify actors")
         val actor = Akka.system.actorSelection("user/*/"+channel)
         actor ! msg
     }
 
     private def hook(channel: String, msg: Any): Unit = {
-        Logger.debug("notify hook")
         val hook = Akka.system.actorSelection("user/hook")
         hook ! (channel, msg)
     }

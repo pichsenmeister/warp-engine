@@ -34,7 +34,6 @@ class HookActor() extends Actor {
     }
 
     private def sendToHook(channel: String, msg: JsValue): Unit = {
-        println("actually send to hook")
         val pool = use[RedisPlugin].sedisPool
         pool.withJedisClient { client =>
             val hook: Option[String] = Dress.up(client).get(channel)
