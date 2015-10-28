@@ -5,6 +5,8 @@
 # CORS
 OPTIONS        /*path                controllers.Actions.options(path)
 
+GET            /                     controllers.Application.index
+
 # socket paths
 GET            /socket               controllers.Application.socket
 POST           /push/:channel        controllers.Application.push(channel: String)

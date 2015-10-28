@@ -23,13 +23,13 @@ class HookActor() extends Actor {
 
     def receive = {
         case (channel: String, sub: Subscribe) =>
-            Logger.debug("received in HookActor ("+channel+"): "+Json.toJson(sub))
+            Logger.debug("[HookActor] received sub ("+channel+"): "+Json.toJson(sub))
             sendToHook(channel, Json.obj("sub" -> Json.toJson(sub)))
         case (channel: String, unsub: Unsubscribe) =>
-            Logger.debug("received in HookActor ("+channel+"): "+Json.toJson(unsub))
+            Logger.debug("[HookActor] received unsub ("+channel+"): "+Json.toJson(unsub))
             sendToHook(channel, Json.obj("unsub" -> Json.toJson(unsub)))
         case (channel: String, msg: ClientMessage) =>
-            Logger.debug("received in HookActor ("+channel+"): "+Json.toJson(msg))
+            Logger.debug("[HookActor] received ClientMessage ("+channel+"): "+Json.toJson(msg))
             sendToHook(channel, Json.toJson(msg))
     }
 

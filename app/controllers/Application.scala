@@ -22,6 +22,10 @@ object Application extends Controller {
     val hookExpiration: Int =
         Play.current.configuration.getInt("webhook.expiration").getOrElse(3600)
 
+    def index = Action {
+        Ok("Accelerating to Warp 6, Captain.")
+    }
+
     def socket = WebSocket.tryAcceptWithActor[JsValue, JsValue] { request =>
         val pool = use[RedisPlugin].sedisPool
 
@@ -53,11 +57,12 @@ object Application extends Controller {
         hook match {
             case Some(h) =>
                 Logger.debug("set hook "+h.hook)
-                val duration: Int = h.duration.getOrElse(hookExpiration)*60
-                val now: String = (System.currentTimeMillis()/1000).toString
                 val pool = use[RedisPlugin].sedisPool
                 pool.withJedisClient { client =>
-                    Dress.up(client).setex(channel, duration, h.hook)
+                    h.duration match {
+                        case Some(duration) => Dress.up(client).setex(channel, duration, h.hook)
+                        case _ => Dress.up(client).set(channel, h.hook)
+                    }
                 }
                 Accepted
             case _ => UnprocessableEntity
