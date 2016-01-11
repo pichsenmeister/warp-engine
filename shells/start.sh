@@ -1,6 +1,5 @@
 #!/bin/sh
-cd ~/warp-engine/
-~/activator-1.3.2-minimal/activator start
+~/warp-dist/bin/warp-engine -Dconfig.file=/root/warp-dist/conf/application.conf >> start.log &
 exit 0
 
 
