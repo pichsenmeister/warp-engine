@@ -12,6 +12,7 @@ GET            /socket               controllers.Application.socket
 POST           /push/:channel        controllers.Application.push(channel: String)
 POST           /hook/:channel        controllers.Application.hook(channel: String)
 POST           /auth                 controllers.Application.auth
+GET            /sessions/:channel    controllers.Application.sessions(channel: String)
 
 
 GET            /assets/*file         controllers.Assets.at(path="/public", file)

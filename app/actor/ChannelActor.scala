@@ -1,12 +1,12 @@
 package actor
 
-import akka.actor.{Props, Actor, ActorRef}
+import akka.actor.{Actor, ActorRef, Props}
 import messages.{ClientMessage, Subscribe, Unsubscribe}
 import org.joda.time.DateTime
 import play.api.Logger
-import play.api.libs.concurrent.Akka
-import play.api.libs.json.{Json, JsValue}
 import play.api.Play.current
+import play.api.libs.concurrent.Akka
+import play.api.libs.json.{JsValue, Json}
 
 object ChannelActor {
     def props(out: ActorRef) = Props(new ChannelActor(out: ActorRef))

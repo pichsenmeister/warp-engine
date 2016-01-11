@@ -1,9 +1,8 @@
 package actor
 
-import akka.actor.{PoisonPill, Props, Actor, ActorRef}
+import akka.actor._
 import messages.Subscribe
 import play.api.Logger
-import play.api.libs.json.Json
 
 object RequestActor {
 

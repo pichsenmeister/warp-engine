@@ -1,17 +1,25 @@
 package controllers
 
-import actor.{Push, WarpActor}
+import actor.{Push, ResolveActor, WarpActor}
+import akka.actor._
+import akka.pattern.ask
+import akka.util.Timeout
 import com.typesafe.plugin._
 import helpers.Hash
-import models.{WebHook, AuthToken}
+import models.{AuthToken, WebHook}
 import org.sedis.Dress
-import play.api.{Logger, Play}
+import play.api.Play
 import play.api.Play.current
-import play.api.libs.json.JsValue
+import play.api.libs.concurrent.Akka
+import play.api.libs.json._
 import play.api.mvc._
-import scala.concurrent.Future
+
+import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
 
 object Application extends Controller {
+
+    implicit val timeout = Timeout(10 seconds)
 
     val authenticate: Boolean =
         Play.current.configuration.getBoolean("auth.active").getOrElse(false)
@@ -56,7 +64,6 @@ object Application extends Controller {
         val hook: Option[WebHook] = request.body.asOpt[WebHook]
         hook match {
             case Some(h) =>
-                Logger.debug("set hook "+h.hook)
                 val pool = use[RedisPlugin].sedisPool
                 pool.withJedisClient { client =>
                     h.duration match {
@@ -82,6 +89,14 @@ object Application extends Controller {
                 Accepted
             case _ => UnprocessableEntity
         }
+    }
+
+    def sessions(channel: String) = CORSAction { implicit request =>
+        val future = Akka.system.actorOf(ResolveActor.props(channel)) ? "resolve"
+        val result: Set[ActorRef] = Await.result(future, timeout.duration).asInstanceOf[Set[ActorRef]]
+
+        val sessions: List[String] = result.map(a => a.path.parent.name).toList
+        Ok(Json.obj("sessions" -> sessions))
     }
 
 }
