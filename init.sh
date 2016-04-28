@@ -21,5 +21,5 @@ echo "alias warp-monitor='sh $engine/shells/install-monitor.sh'" >> ~/.bashrc
 source ~/.bashrc
 activator dist
 unzip $engine/target/universal/warp-engine-1.0-SNAPSHOT.zip
-mv $engine/target/universal/warp-engine-1.0-SNAPSHOT ../
+mv $engine/target/universal/warp-engine-1.0-SNAPSHOT ../warp-dist
 exit 0
